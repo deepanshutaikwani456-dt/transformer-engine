@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Behind the Scenes of GPT: Interactive Visual Walkthrough</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(99,102,241,0.6)); }
+    }
+    .pulse-node { animation: pulse-glow 2s infinite ease-in-out; }
+    .fade-enter { transition: all 0.4s ease-out; }
+  </style>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-4 select-none">
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-2xl p-6 shadow-xl max-w-3xl mx-auto space-y-6">
+
+    <!-- Header & Video Player Navigation -->
+    <div class="flex items-center justify-between border-b border-[var(--border)] pb-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-500 text-xs font-bold">▶</span>
+          <h2 class="font-bold text-lg text-[var(--foreground)]">GPT Behind-The-Scenes: Visual Walkthrough</h2>
+        </div>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Watch how "ROMEO:\nO, wilt thou leave me" turns into the next token</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="prevBtn" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--border)] transition">⏮ Prev</button>
+        <button id="playBtn" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow transition flex items-center gap-1.5">
+          <span id="playIcon">▶</span> <span id="playText">Play</span>
+        </button>
+        <button id="nextBtn" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--border)] transition">Next ⏭</button>
+      </div>
+    </div>
+
+    <!-- Timeline Scrubber -->
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-xs font-medium text-[var(--muted-foreground)]">
+        <span id="stageLabel">Stage 1 of 5: Text to Token IDs</span>
+        <span id="stageTimer">00:00 / 00:25</span>
+      </div>
+      <div class="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden cursor-pointer" id="scrubberTrack">
+        <div id="progressBar" class="bg-indigo-500 h-full w-1/5 transition-all duration-300"></div>
+      </div>
+      <div class="grid grid-cols-5 text-[11px] text-center text-[var(--muted-foreground)] pt-1">
+        <span class="cursor-pointer font-semibold" onclick="setStage(0)">1. Tokenize</span>
+        <span class="cursor-pointer" onclick="setStage(1)">2. Seats</span>
+        <span class="cursor-pointer" onclick="setStage(2)">3. Attention</span>
+        <span class="cursor-pointer" onclick="setStage(3)">4. Temperature</span>
+        <span class="cursor-pointer" onclick="setStage(4)">5. Predict</span>
+      </div>
+    </div>
+
+    <!-- Main Visual Stage Canvas -->
+    <div class="min-h-[290px] rounded-xl border border-[var(--border)] bg-[var(--background)] p-5 relative overflow-hidden flex flex-col justify-center">
+      
+      <!-- STAGE 1: TOKENIZATION -->
+      <div id="viewStage0" class="space-y-4">
+        <div class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 1 • The Character Tokenizer</div>
+        <div class="flex items-center justify-center gap-1.5 flex-wrap py-2">
+          <div class="px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-center shadow-sm">
+            <div class="text-xs text-[var(--muted-foreground)]">Input Char</div>
+            <div class="text-base font-bold text-indigo-400">'R'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">ID: 46</div>
+          </div>
+          <div class="px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-center shadow-sm">
+            <div class="text-xs text-[var(--muted-foreground)]">Input Char</div>
+            <div class="text-base font-bold text-indigo-400">'O'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">ID: 27</div>
+          </div>
+          <div class="px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-center shadow-sm">
+            <div class="text-xs text-[var(--muted-foreground)]">Input Char</div>
+            <div class="text-base font-bold text-indigo-400">'M'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">ID: 25</div>
+          </div>
+          <div class="px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-center shadow-sm">
+            <div class="text-xs text-[var(--muted-foreground)]">Input Char</div>
+            <div class="text-base font-bold text-indigo-400">'E'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">ID: 17</div>
+          </div>
+          <div class="px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-center shadow-sm">
+            <div class="text-xs text-[var(--muted-foreground)]">Input Char</div>
+            <div class="text-base font-bold text-indigo-400">'O'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">ID: 27</div>
+          </div>
+          <div class="px-2 text-xs text-[var(--muted-foreground)]">...</div>
+          <div class="px-3 py-2 bg-indigo-500/10 border border-indigo-500/40 rounded-lg text-center shadow-sm pulse-node">
+            <div class="text-xs text-indigo-300">Last Word</div>
+            <div class="text-base font-bold text-amber-400">'me'</div>
+            <div class="text-[10px] text-emerald-400 mt-1 font-mono">IDs: 25, 17</div>
+          </div>
+        </div>
+        <p class="text-xs text-center text-[var(--muted-foreground)]">The letters are converted into an array of integers using <code class="text-indigo-400">stoi</code> dictionary lookup.</p>
+      </div>
+
+      <!-- STAGE 2: POSITIONAL ENCODING -->
+      <div id="viewStage1" class="space-y-4 hidden">
+        <div class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 2 • Stamping Seat Numbers</div>
+        <div class="flex items-center justify-center gap-3">
+          <div class="p-3 bg-[var(--card)] border border-[var(--border)] rounded-xl text-center w-40">
+            <span class="text-xs text-[var(--muted-foreground)]">Word Identity</span>
+            <div class="font-bold text-indigo-400 text-sm mt-1">"me" vector</div>
+            <div class="text-[11px] font-mono text-[var(--muted-foreground)] mt-1">[0.8, -0.2, 0.4...]</div>
+          </div>
+          <div class="text-lg font-bold text-indigo-400">+</div>
+          <div class="p-3 bg-[var(--card)] border border-amber-500/30 rounded-xl text-center w-40">
+            <span class="text-xs text-amber-400">Seat Number</span>
+            <div class="font-bold text-amber-400 text-sm mt-1">Seat #26 vector</div>
+            <div class="text-[11px] font-mono text-[var(--muted-foreground)] mt-1">[-0.1, 0.5, 0.1...]</div>
+          </div>
+          <div class="text-lg font-bold text-emerald-400">=</div>
+          <div class="p-3 bg-emerald-500/10 border border-emerald-500/40 rounded-xl text-center w-44 shadow-md pulse-node">
+            <span class="text-xs text-emerald-400 font-semibold">x (Input Vector)</span>
+            <div class="font-bold text-sm text-[var(--foreground)] mt-1">Meaning + Position</div>
+            <div class="text-[11px] font-mono text-emerald-300 mt-1">[0.7, 0.3, 0.5...]</div>
+          </div>
+        </div>
+        <p class="text-xs text-center text-[var(--muted-foreground)]">Without seat numbers, the model couldn't tell which character came first! We add them together in <code class="text-indigo-400">x = tok_emb + pos_emb</code>.</p>
+      </div>
+
+      <!-- STAGE 3: SELF-ATTENTION -->
+      <div id="viewStage2" class="space-y-4 hidden">
+        <div class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 3 • Self-Attention Communication (Q & K Matching)</div>
+        <div class="relative bg-[var(--card)] p-4 rounded-xl border border-[var(--border)]">
+          <div class="flex justify-between items-center px-4">
+            <div class="text-center p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
+              <div class="text-xs font-bold text-indigo-300">Position 0: "ROMEO"</div>
+              <div class="text-[10px] text-[var(--muted-foreground)]">Key (K): "Tragic lover"</div>
+            </div>
+            <div class="flex-1 mx-4 relative flex flex-col items-center">
+              <div class="text-xs font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30 mb-1">Affinity Match: 94%</div>
+              <div class="w-full h-1 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400 rounded-full animate-pulse"></div>
+              <div class="text-[10px] text-[var(--muted-foreground)] mt-1">Causal Mask allows looking backwards ⬅️</div>
+            </div>
+            <div class="text-center p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+              <div class="text-xs font-bold text-emerald-300">Position 26: "me"</div>
+              <div class="text-[10px] text-[var(--muted-foreground)]">Query (Q): "Who am I talking with?"</div>
+            </div>
+          </div>
+          <div class="mt-3 text-center text-xs text-emerald-400 font-medium">
+            ✨ "me" absorbs Value (V) from "ROMEO" $\rightarrow$ Vector now holds Romeo's romantic context!
+          </div>
+        </div>
+        <p class="text-xs text-center text-[var(--muted-foreground)]">The Query of the last word matches with the Key of earlier words to pull in their context.</p>
+      </div>
+
+      <!-- STAGE 4: TEMPERATURE MATH -->
+      <div id="viewStage3" class="space-y-4 hidden">
+        <div class="flex justify-between items-center">
+          <div class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 4 • Logits & Temperature Reshaping</div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-[var(--muted-foreground)]">Temperature:</span>
+            <input type="range" id="tempSlider" min="0.2" max="1.6" step="0.1" value="0.8" class="w-24 accent-indigo-500 cursor-pointer" oninput="updateTempSim(this.value)">
+            <span id="tempVal" class="text-xs font-mono text-amber-400 font-bold">0.8</span>
+          </div>
+        </div>
+        
+        <!-- Live Probability Bars -->
+        <div class="space-y-2 bg-[var(--card)] p-3 rounded-xl border border-[var(--border)]">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span>Candidate ' ' (space)</span>
+              <span id="probSpace" class="font-mono text-indigo-400 font-semibold">97.5%</span>
+            </div>
+            <div class="w-full bg-[var(--border)] h-2.5 rounded-full overflow-hidden">
+              <div id="barSpace" class="bg-indigo-500 h-full w-[97.5%] transition-all duration-200"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span>Candidate 'a'</span>
+              <span id="probA" class="font-mono text-indigo-400 font-semibold">2.4%</span>
+            </div>
+            <div class="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
+              <div id="barA" class="bg-indigo-400 h-full w-[2.4%] transition-all duration-200"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span>Candidate 'z' (rare)</span>
+              <span id="probZ" class="font-mono text-indigo-400 font-semibold">0.1%</span>
+            </div>
+            <div class="w-full bg-[var(--border)] h-1.5 rounded-full overflow-hidden">
+              <div id="barZ" class="bg-red-400 h-full w-[0.1%] transition-all duration-200"></div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-center text-[var(--muted-foreground)]">Slide the temperature above to see how high temperatures flatten percentages and low temperatures make them spiky!</p>
+      </div>
+
+      <!-- STAGE 5: SAMPLING & GENERATION -->
+      <div id="viewStage4" class="space-y-4 hidden">
+        <div class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Step 5 • Spinning The Wheel & Autocomplete</div>
+        <div class="text-center space-y-3">
+          <div class="inline-block p-4 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 border-2 border-indigo-500 pulse-node">
+            <div class="text-2xl font-black text-amber-400 font-mono">' ' (space)</div>
+            <div class="text-[10px] text-emerald-400 uppercase font-semibold">Winning Token Chosen!</div>
+          </div>
+          <div class="p-3 bg-[var(--card)] rounded-xl border border-[var(--border)] font-mono text-xs text-left">
+            <span class="text-[var(--muted-foreground)]">ROMEO:\nO, wilt thou leave me</span><span class="text-amber-400 font-bold bg-amber-500/20 px-1 py-0.5 rounded ml-1 animate-pulse">[+] ' '</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)]">The space is appended to the text, and the loop repeats 40 times per second to spell out Shakespeare dialogue!</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Description Card -->
+    <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-3 text-xs text-[var(--muted-foreground)] flex items-start gap-2.5">
+      <span class="text-indigo-400 text-sm">💡</span>
+      <div id="stageDescription">
+        <b>Stage 1:</b> The model takes raw prompt characters and uses a dictionary map (<code class="text-indigo-400">stoi</code>) to transform them into an array of number IDs that the Mac's GPU can understand.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentStage = 0;
+    let isPlaying = false;
+    let playTimer = null;
+
+    const stages = [
+      {
+        title: "Stage 1 of 5: Text to Token IDs",
+        timer: "00:05 / 00:25",
+        progress: "20%",
+        desc: "<b>Stage 1:</b> The model takes raw prompt characters and uses a dictionary map (<code class='text-indigo-400'>stoi</code>) to transform them into an array of number IDs that the Mac's GPU can understand."
+      },
+      {
+        title: "Stage 2 of 5: Positional Seat Numbers",
+        timer: "00:10 / 00:25",
+        progress: "40%",
+        desc: "<b>Stage 2:</b> Words need to know where they sit in line! The model looks up position vectors (<code class='text-indigo-400'>pos_emb</code>) and adds them directly to word meanings (<code class='text-indigo-400'>x = tok_emb + pos_emb</code>)."
+      },
+      {
+        title: "Stage 3 of 5: Self-Attention (Q & K Matching)",
+        timer: "00:15 / 00:25",
+        progress: "60%",
+        desc: "<b>Stage 3:</b> The word 'me' sends out a Query asking for context. 'ROMEO' matches it, and 'me' absorbs romantic tragedy values from Romeo across the causal mask."
+      },
+      {
+        title: "Stage 4 of 5: Logits & Temperature Reshaping",
+        timer: "00:20 / 00:25",
+        progress: "80%",
+        desc: "<b>Stage 4:</b> The model casts 65 votes. Dividing by temperature reshapes the probabilities: lower temperature sharpens the top choice, while higher temperature gives wilder options a chance."
+      },
+      {
+        title: "Stage 5 of 5: Spinning the Wheel & Appending",
+        timer: "00:25 / 00:25",
+        progress: "100%",
+        desc: "<b>Stage 5:</b> PyTorch rolls a random number (<code class='text-indigo-400'>torch.multinomial</code>) to pick the winner from the percentage wheel, attaches it to the text, and repeats the loop!"
+      }
+    ];
+
+    function setStage(index) {
+      currentStage = index;
+      for (let i = 0; i < 5; i++) {
+        const el = document.getElementById(`viewStage${i}`);
+        if (el) el.classList.toggle('hidden', i !== currentStage);
+      }
+      document.getElementById('stageLabel').innerText = stages[currentStage].title;
+      document.getElementById('stageTimer').innerText = stages[currentStage].timer;
+      document.getElementById('progressBar').style.width = stages[currentStage].progress;
+      document.getElementById('stageDescription').innerHTML = stages[currentStage].desc;
+    }
+
+    function nextStage() {
+      if (currentStage < 4) {
+        setStage(currentStage + 1);
+      } else {
+        setStage(0);
+      }
+    }
+
+    function prevStage() {
+      if (currentStage > 0) {
+        setStage(currentStage - 1);
+      } else {
+        setStage(4);
+      }
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      document.getElementById('playIcon').innerText = isPlaying ? "⏸" : "▶";
+      document.getElementById('playText').innerText = isPlaying ? "Pause" : "Play";
+
+      if (isPlaying) {
+        playTimer = setInterval(() => {
+          if (currentStage >= 4) {
+            setStage(0);
+          } else {
+            nextStage();
+          }
+        }, 4000);
+      } else {
+        clearInterval(playTimer);
+      }
+    }
+
+    function updateTempSim(temp) {
+      temp = parseFloat(temp);
+      document.getElementById('tempVal').innerText = temp.toFixed(1);
+      
+      // Simulated Softmax shift
+      let scoreSpace = 8.0 / temp;
+      let scoreA = 5.0 / temp;
+      let scoreZ = -4.0 / temp;
+
+      let expSpace = Math.exp(scoreSpace);
+      let expA = Math.exp(scoreA);
+      let expZ = Math.exp(scoreZ);
+      let sum = expSpace + expA + expZ;
+
+      let pSpace = (expSpace / sum * 100);
+      let pA = (expA / sum * 100);
+      let pZ = (expZ / sum * 100);
+
+      document.getElementById('probSpace').innerText = pSpace.toFixed(1) + '%';
+      document.getElementById('barSpace').style.width = Math.min(100, Math.max(2, pSpace)) + '%';
+
+      document.getElementById('probA').innerText = pA.toFixed(1) + '%';
+      document.getElementById('barA').style.width = Math.min(100, Math.max(1, pA)) + '%';
+
+      document.getElementById('probZ').innerText = pZ.toFixed(1) + '%';
+      document.getElementById('barZ').style.width = Math.min(100, Math.max(0.5, pZ)) + '%';
+    }
+
+    document.getElementById('playBtn').addEventListener('click', togglePlay);
+    document.getElementById('nextBtn').addEventListener('click', () => { clearInterval(playTimer); isPlaying = false; document.getElementById('playIcon').innerText = "▶"; document.getElementById('playText').innerText = "Play"; nextStage(); });
+    document.getElementById('prevBtn').addEventListener('click', () => { clearInterval(playTimer); isPlaying = false; document.getElementById('playIcon').innerText = "▶"; document.getElementById('playText').innerText = "Play"; prevStage(); });
+
+    setStage(0);
+  </script>
+</body>
+</html>
