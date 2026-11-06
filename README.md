@@ -3,7 +3,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![Hardware](https://img.shields.io/badge/Hardware-Apple%20Silicon%20(MPS)%20%7C%20CUDA%20%7C%20CPU-blue.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Interactive Demo](https://img.shields.io/badge/Interactive%20Walkthrough-Live%20Demo-brightgreen.svg)](https://yourusername.github.io/your-repo-name/)
+[![Interactive Demo](https://img.shields.io/badge/Interactive%20Walkthrough-Live%20Demo-brightgreen.svg)](https://deepanshutaikwani456-dt.github.io/transformer-engine/)
 
 > **A complete, modular Decoder-only Transformer Language Model built from scratch in pure PyTorch.**  
 > Inspired by Andrej Karpathy's *Zero to Hero* series, enhanced with a modular package architecture, advanced decoding strategies (Temperature, Top-$K$, Top-$P$), attention heatmap visualization, multi-dataset training, and an interactive browser-based visual simulation.
@@ -120,8 +120,8 @@ The Bigram model hit a hard statistical wall at **$2.46$** because single-charac
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/yourusername/gpt-from-scratch.git
-cd gpt-from-scratch
+git clone https://github.com/deepanshutaikwani456-dt/transformer-engine.git
+cd transformer-engine
 pip install -r requirements.txt
 ```
 
